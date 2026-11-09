@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piloto RII-IQ | UNAL Sede Bogotá</title>
-    <!-- Tailwind CSS para estilos -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome para iconos -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- React y Babel CDN -->
+    <!-- React & Babel -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -23,81 +23,95 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useMemo } = React;
+        const { useState, useMemo, useEffect } = React;
 
-        // Base de Datos Oficial de 54 Materias de la Malla de IQ (Plan 2874)
+        // CLAVE DE ADMINISTRADOR (Puedes cambiarla aquí)
+        const ADMIN_PIN = "2874"; 
+
+        // Base de Datos Oficial de 54 Materias de IQ (Plan 2874)
         const OFFICIAL_SUBJECTS = [
             // DISCIPLINAR OBLIGATORIA
-            { code: '2015707', name: 'Balance de energía y equilibrio químico', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015708', name: 'Balance de materia', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015710', name: 'Control de procesos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015712', name: 'Diseño de plantas y equipos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015713', name: 'Diseño de procesos químicos y bioquímicos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015714', name: 'Fluidos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015715', name: 'Ingeniería de Procesos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015716', name: 'Ingeniería de Reacciones Químicas', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015718', name: 'Introducción a la ingeniería química', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015719', name: 'Laboratorio de fluidos, sólidos y transferencia de calor', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015720', name: 'Laboratorio de operaciones de separación, reaccion y control', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015721', name: 'Laboratorio de propiedades termodinámicas y de transporte', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015726', name: 'Manejo de sólidos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015731', name: 'Operaciones de Separación', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2024045', name: 'Taller de proyectos interdisciplinarios', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015735', name: 'Taller 1', credits: 1, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015736', name: 'Taller 2', credits: 1, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015741', name: 'Termodinámica', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015740', name: 'Termodinámica química', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015743', name: 'Transferencia de calor', credits: 4, type: 'DISCIPLINAR OBLIGATORIA (C)' },
-            { code: '2015744', name: 'Transferencia de masa', credits: 3, type: 'DISCIPLINAR OBLIGATORIA (C)' },
+            { code: '2015707', name: 'Balance de energía y equilibrio químico', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015708', name: 'Balance de materia', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015710', name: 'Control de procesos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015712', name: 'Diseño de plantas y equipos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015713', name: 'Diseño de procesos químicos y bioquímicos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015714', name: 'Fluidos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015715', name: 'Ingeniería de Procesos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015716', name: 'Ingeniería de Reacciones Químicas', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015718', name: 'Introducción a la ingeniería química', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015719', name: 'Laboratorio de fluidos, sólidos y transferencia de calor', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015720', name: 'Laboratorio de operaciones de separación, reaccion y control', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015721', name: 'Laboratorio de propiedades termodinámicas y de transporte', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015726', name: 'Manejo de sólidos', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015731', name: 'Operaciones de Separación', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2024045', name: 'Taller de proyectos interdisciplinarios', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015735', name: 'Taller 1', credits: 1, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015736', name: 'Taller 2', credits: 1, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015741', name: 'Termodinámica', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015740', name: 'Termodinámica química', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015743', name: 'Transferencia de calor', credits: 4, type: 'DISCIPLINAR OBLIGATORIA' },
+            { code: '2015744', name: 'Transferencia de masa', credits: 3, type: 'DISCIPLINAR OBLIGATORIA' },
             
             // FUNDAMENTACIÓN OBLIGATORIA
-            { code: '1000003-B', name: 'Álgebra Lineal', credits: 4, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000010-B', name: 'Biología molecular y celular', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000004-B', name: 'Cálculo diferencial', credits: 4, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000006-B', name: 'Cálculo en varias variables', credits: 4, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000005-B', name: 'Cálculo Integral', credits: 4, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000007-B', name: 'Ecuaciones Diferenciales', credits: 4, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000017-B', name: 'Fundamentos de electricidad y magnetismo', credits: 4, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000019-B', name: 'Fundamentos de mecánica', credits: 4, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '2015702', name: 'Gerencia y gestión de proyectos', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '2015703', name: 'Ingeniería económica', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000027-B', name: 'Laboratorio principios de análisis químico', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000031-B', name: 'Laboratorio principios de química orgánica', credits: 2, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000025-B', name: 'Laboratorio tecnicas básicas en química', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '2015970', name: 'Métodos numéricos', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000026-B', name: 'Principios de análisis químico', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000024-B', name: 'Principios de química', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000028-B', name: 'Principios de química inorgánica', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000030-B', name: 'Principios de química orgánica', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
-            { code: '1000013-B', name: 'Probabilidad y estadística fundamental', credits: 3, type: 'FUND. OBLIGATORIA (B)' },
+            { code: '1000003-B', name: 'Álgebra Lineal', credits: 4, type: 'FUND. OBLIGATORIA' },
+            { code: '1000010-B', name: 'Biología molecular y celular', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000004-B', name: 'Cálculo diferencial', credits: 4, type: 'FUND. OBLIGATORIA' },
+            { code: '1000006-B', name: 'Cálculo en varias variables', credits: 4, type: 'FUND. OBLIGATORIA' },
+            { code: '1000005-B', name: 'Cálculo Integral', credits: 4, type: 'FUND. OBLIGATORIA' },
+            { code: '1000007-B', name: 'Ecuaciones Diferenciales', credits: 4, type: 'FUND. OBLIGATORIA' },
+            { code: '1000017-B', name: 'Fundamentos de electricidad y magnetismo', credits: 4, type: 'FUND. OBLIGATORIA' },
+            { code: '1000019-B', name: 'Fundamentos de mecánica', credits: 4, type: 'FUND. OBLIGATORIA' },
+            { code: '2015702', name: 'Gerencia y gestión de proyectos', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '2015703', name: 'Ingeniería económica', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000027-B', name: 'Laboratorio principios de análisis químico', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000031-B', name: 'Laboratorio principios de química orgánica', credits: 2, type: 'FUND. OBLIGATORIA' },
+            { code: '1000025-B', name: 'Laboratorio tecnicas básicas en química', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '2015970', name: 'Métodos numéricos', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000026-B', name: 'Principios de análisis químico', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000024-B', name: 'Principios de química', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000028-B', name: 'Principios de química inorgánica', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000030-B', name: 'Principios de química orgánica', credits: 3, type: 'FUND. OBLIGATORIA' },
+            { code: '1000013-B', name: 'Probabilidad y estadística fundamental', credits: 3, type: 'FUND. OBLIGATORIA' },
 
             // DISCIPLINAR OPTATIVA
-            { code: '2017256', name: 'Ciencia e ingeniería de materiales', credits: 3, type: 'DISCIPLINAR OPTATIVA (T)' },
-            { code: '1000038-B', name: 'Fisicoquímica II', credits: 3, type: 'DISCIPLINAR OPTATIVA (T)' },
-            { code: '1000040-B', name: 'Introducción a la ciencia de materiales', credits: 3, type: 'DISCIPLINAR OPTATIVA (T)' },
-            { code: '2024929', name: 'Introducción a la Ingeniería de Materiales Poliméricos', credits: 3, type: 'DISCIPLINAR OPTATIVA (T)' },
-            { code: '2015729', name: 'Modelamiento y simulación de procesos químicos', credits: 3, type: 'DISCIPLINAR OPTATIVA (T)' },
-            { code: '2015738', name: 'Termodinámica de Ciclos', credits: 3, type: 'DISCIPLINAR OPTATIVA (T)' },
-            { code: '2015739', name: 'Termodinámica molecular', credits: 3, type: 'DISCIPLINAR OPTATIVA (T)' },
+            { code: '2017256', name: 'Ciencia e ingeniería de materiales', credits: 3, type: 'DISCIPLINAR OPTATIVA' },
+            { code: '1000038-B', name: 'Fisicoquímica II', credits: 3, type: 'DISCIPLINAR OPTATIVA' },
+            { code: '1000040-B', name: 'Introducción a la ciencia de materiales', credits: 3, type: 'DISCIPLINAR OPTATIVA' },
+            { code: '2024929', name: 'Introducción a la Ingeniería de Materiales Poliméricos', credits: 3, type: 'DISCIPLINAR OPTATIVA' },
+            { code: '2015729', name: 'Modelamiento y simulación de procesos químicos', credits: 3, type: 'DISCIPLINAR OPTATIVA' },
+            { code: '2015738', name: 'Termodinámica de Ciclos', credits: 3, type: 'DISCIPLINAR OPTATIVA' },
+            { code: '2015739', name: 'Termodinámica molecular', credits: 3, type: 'DISCIPLINAR OPTATIVA' },
 
             // FUNDAMENTACIÓN OPTATIVA
-            { code: '2015709', name: 'Comunicación oral y escrita', credits: 3, type: 'FUND. OPTATIVA (O)' },
-            { code: '2015711', name: 'Dibujo básico', credits: 3, type: 'FUND. OPTATIVA (O)' },
-            { code: '2015695', name: 'Diseño, gestión y evaluación de proyectos', credits: 3, type: 'FUND. OPTATIVA (O)' },
-            { code: '2016592', name: 'Economía general', credits: 3, type: 'FUND. OPTATIVA (O)' },
-            { code: '2016741', name: 'Finanzas', credits: 3, type: 'FUND. OPTATIVA (O)' },
-            { code: '2015734', name: 'Programación de computadores', credits: 3, type: 'FUND. OPTATIVA (O)' },
-            { code: '2016609', name: 'Seguridad industrial', credits: 3, type: 'FUND. OPTATIVA (O)' }
+            { code: '2015709', name: 'Comunicación oral y escrita', credits: 3, type: 'FUND. OPTATIVA' },
+            { code: '2015711', name: 'Dibujo básico', credits: 3, type: 'FUND. OPTATIVA' },
+            { code: '2015695', name: 'Diseño, gestión y evaluación de proyectos', credits: 3, type: 'FUND. OPTATIVA' },
+            { code: '2016592', name: 'Economía general', credits: 3, type: 'FUND. OPTATIVA' },
+            { code: '2016741', name: 'Finanzas', credits: 3, type: 'FUND. OPTATIVA' },
+            { code: '2015734', name: 'Programación de computadores', credits: 3, type: 'FUND. OPTATIVA' },
+            { code: '2016609', name: 'Seguridad industrial', credits: 3, type: 'FUND. OPTATIVA' }
         ];
 
         function App() {
             const [view, setView] = useState('student'); // 'student' | 'admin'
+            const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+            const [inputPin, setInputPin] = useState('');
+            const [showPinModal, setShowPinModal] = useState(false);
+
             const [studentCode, setStudentCode] = useState('');
             const [email, setEmail] = useState('');
             const [selectedSubjects, setSelectedSubjects] = useState([]);
             const [searchTerm, setSearchTerm] = useState('');
             const [filterType, setFilterType] = useState('ALL');
             const [submitted, setSubmitted] = useState(false);
+            const [alreadySubmitted, setAlreadySubmitted] = useState(false);
+
+            // Almacenamiento local de respuestas recibidas
+            const [responses, setResponses] = useState(() => {
+                const saved = localStorage.getItem('rii_iq_responses');
+                return saved ? JSON.parse(saved) : [];
+            });
 
             const filteredSubjects = useMemo(() => {
                 return OFFICIAL_SUBJECTS.filter(s => {
@@ -107,6 +121,28 @@
                     return matchesSearch && matchesType;
                 });
             }, [searchTerm, filterType]);
+
+            // Manejo de Login de Administrador
+            const handleAdminAccess = () => {
+                if (isAdminAuthenticated) {
+                    setView('admin');
+                } else {
+                    setShowPinModal(true);
+                }
+            };
+
+            const verifyPin = (e) => {
+                e.preventDefault();
+                if (inputPin === ADMIN_PIN) {
+                    setIsAdminAuthenticated(true);
+                    setShowPinModal(false);
+                    setView('admin');
+                    setInputPin('');
+                } else {
+                    alert('PIN Incorrecto. Acceso exclusivo para la Representación Estudiantil.');
+                    setInputPin('');
+                }
+            };
 
             const handleToggleSubject = (subject) => {
                 const exists = selectedSubjects.find(s => s.code === subject.code);
@@ -121,7 +157,7 @@
                     }
                     setSelectedSubjects([
                         ...selectedSubjects, 
-                        { ...subject, priority: selectedSubjects.length + 1, preferredSlot: 'Mañana' }
+                        { ...subject, priority: selectedSubjects.length + 1 }
                     ]);
                 }
             };
@@ -139,22 +175,69 @@
                 setSelectedSubjects(reordered);
             };
 
+            // VALIDACIÓN Y ENVÍO DE RESPUESTA
             const handleSubmit = (e) => {
                 e.preventDefault();
-                if (!email.endsWith('@unal.edu.co')) {
-                    alert('Debes ingresar tu correo institucional institucional (@unal.edu.co)');
+                const cleanEmail = email.trim().toLowerCase();
+                const cleanCode = studentCode.trim();
+
+                if (!cleanEmail.endsWith('@unal.edu.co')) {
+                    alert('ERROR: Debes ingresar un correo institucional válido terminado en @unal.edu.co');
                     return;
                 }
+
                 if (selectedSubjects.length === 0) {
-                    alert('Debes seleccionar al menos 1 asignatura para enviar la intención.');
+                    alert('Debes seleccionar al menos 1 asignatura para enviar tu intención.');
                     return;
                 }
+
+                // VERIFICACIÓN DE ÚNICA RESPUESTA
+                const hasResponded = responses.some(r => r.email === cleanEmail || r.code === cleanCode);
+                if (hasResponded) {
+                    setAlreadySubmitted(true);
+                    return;
+                }
+
+                // Guardar la nueva respuesta
+                const newResponse = {
+                    email: cleanEmail,
+                    code: cleanCode,
+                    timestamp: new Date().toLocaleString(),
+                    subjects: selectedSubjects.map(s => ({ code: s.code, name: s.name, priority: s.priority }))
+                };
+
+                const updatedResponses = [...responses, newResponse];
+                setResponses(updatedResponses);
+                localStorage.setItem('rii_iq_responses', JSON.stringify(updatedResponses));
                 setSubmitted(true);
+            };
+
+            // DESCARGAR REPORTE EXCEL/CSV (SOLO ADMON)
+            const downloadCSV = () => {
+                if (responses.length === 0) {
+                    alert("Aún no hay respuestas registradas.");
+                    return;
+                }
+                let csv = "Fecha,Correo,Codigo,Prioridad_1,Prioridad_2,Prioridad_3,Prioridad_4,Prioridad_5\n";
+                responses.forEach(r => {
+                    const p1 = r.subjects.find(s => s.priority === 1)?.name || "";
+                    const p2 = r.subjects.find(s => s.priority === 2)?.name || "";
+                    const p3 = r.subjects.find(s => s.priority === 3)?.name || "";
+                    const p4 = r.subjects.find(s => s.priority === 4)?.name || "";
+                    const p5 = r.subjects.find(s => s.priority === 5)?.name || "";
+                    csv += `"${r.timestamp}","${r.email}","${r.code}","${p1}","${p2}","${p3}","${p4}","${p5}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Reporte_Piloto_RII_IQ_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
             };
 
             return (
                 <div className="max-w-4xl mx-auto px-4 py-6">
-                    {/* ENCABEZADO INSTITUCIONAL */}
+                    {/* ENCABEZADO */}
                     <header className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 mb-6">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4 mb-4">
                             <div className="flex items-center gap-3">
@@ -167,54 +250,59 @@
                                 </div>
                             </div>
                             
-                            {/* BOTÓN VISTA ESTUDIANTE / ADMON */}
+                            {/* BOTONES DE NAVEGACIÓN */}
                             <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-semibold">
                                 <button 
                                     onClick={() => setView('student')}
                                     className={`px-3 py-1.5 rounded-lg transition-all ${view === 'student' ? 'bg-white shadow-sm unal-text font-bold' : 'text-slate-600'}`}>
-                                    <i className="fa-solid fa-user-graduate mr-1.5"></i> Vista Estudiante
+                                    <i className="fa-solid fa-user-graduate mr-1.5"></i> Formulario Estudiantil
                                 </button>
                                 <button 
-                                    onClick={() => setView('admin')}
+                                    onClick={handleAdminAccess}
                                     className={`px-3 py-1.5 rounded-lg transition-all ${view === 'admin' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600'}`}>
-                                    <i className="fa-solid fa-lock mr-1.5"></i> Panel Administración
+                                    <i className="fa-solid fa-lock mr-1.5"></i> Acceso Administración
                                 </button>
                             </div>
                         </div>
 
                         <div className="flex flex-wrap items-center justify-between text-xs text-slate-600 gap-2 bg-slate-50 p-3 rounded-xl border border-slate-100">
-                            <span className="font-semibold unal-text"><i className="fa-regular fa-calendar-check mr-1"></i> Ventana de recolección: 7 de Diciembre – 16 de Diciembre</span>
-                            <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold"><i className="fa-solid fa-circle text-[8px] mr-1"></i> Piloto Oficial DIQA</span>
+                            <span className="font-semibold unal-text"><i className="fa-regular fa-calendar-check mr-1"></i> Ventana: 7 de Diciembre – 16 de Diciembre</span>
+                            <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold"><i className="fa-solid fa-circle text-[8px] mr-1"></i> Formulario Único por Estudiante</span>
                         </div>
                     </header>
 
                     {/* VISTA ESTUDIANTE */}
                     {view === 'student' && (
-                        submitted ? (
+                        alreadySubmitted ? (
+                            <div className="bg-white rounded-2xl shadow-sm border border-amber-200 p-8 text-center space-y-4">
+                                <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                                    <i className="fa-solid fa-circle-exclamation"></i>
+                                </div>
+                                <h2 className="text-2xl font-bold text-slate-900">Registro Ya Realizado</h2>
+                                <p className="text-sm text-slate-600 max-w-md mx-auto">
+                                    El sistema detectó que tu correo o código ya registró una intención de inscripción. Para garantizar cifras reales ante el Comité Asesor, solo se permite una única respuesta por estudiante.
+                                </p>
+                            </div>
+                        ) : submitted ? (
                             <div className="bg-white rounded-2xl shadow-sm border border-emerald-200 p-8 text-center space-y-4">
                                 <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl">
                                     <i className="fa-solid fa-check"></i>
                                 </div>
                                 <h2 className="text-2xl font-bold text-slate-900">¡Intención Registrada Exitosamente!</h2>
                                 <p className="text-sm text-slate-600 max-w-md mx-auto">
-                                    Tus asignaturas priorizadas han sido consolidadas para el reporte de oferta del Comité Asesor del DIQA.
+                                    Tus asignaturas priorizadas han sido guardadas. Este insumo se presentará de forma consolidada ante la Dirección del Departamento y el Comité Asesor del DIQA.
                                 </p>
-                                <button 
-                                    onClick={() => { setSubmitted(false); setSelectedSubjects([]); }}
-                                    className="unal-green text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-95 transition-opacity">
-                                    Registrar nueva respuesta
-                                </button>
                             </div>
                         ) : (
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* PASO 1: DATOS */}
+                                {/* PASO 1: DATOS INSTITUCIONALES */}
                                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
                                     <h2 className="text-sm font-bold uppercase tracking-wider unal-text flex items-center gap-2">
-                                        <i className="fa-solid fa-id-card"></i> 1. Identificación Académica
+                                        <i className="fa-solid fa-id-card"></i> 1. Verificación Institucional
                                     </h2>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-xs font-semibold text-slate-700 mb-1">Correo Institucional (@unal.edu.co)</label>
+                                            <label className="block text-xs font-semibold text-slate-700 mb-1">Correo Institucional UNAL (@unal.edu.co)</label>
                                             <input 
                                                 type="email" 
                                                 required 
@@ -225,7 +313,7 @@
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-semibold text-slate-700 mb-1">Documento / Código Estudiantil</label>
+                                            <label className="block text-xs font-semibold text-slate-700 mb-1">Código Estudiantil UNAL</label>
                                             <input 
                                                 type="text" 
                                                 required 
@@ -238,7 +326,7 @@
                                     </div>
                                 </div>
 
-                                {/* PASO 2: SELECCIÓN */}
+                                {/* PASO 2: SELECCIÓN DE MATERIAS */}
                                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                         <h2 className="text-sm font-bold uppercase tracking-wider unal-text flex items-center gap-2">
@@ -253,7 +341,7 @@
                                     <div className="flex flex-col sm:flex-row gap-2">
                                         <input 
                                             type="text" 
-                                            placeholder="Buscar por código o nombre de materia..."
+                                            placeholder="Buscar materia por código o nombre..."
                                             value={searchTerm}
                                             onChange={(e) => setSearchTerm(e.target.value)}
                                             className="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600"
@@ -270,7 +358,7 @@
                                         </select>
                                     </div>
 
-                                    {/* LISTADO ASIGNATURAS */}
+                                    {/* LISTADO */}
                                     <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 border border-slate-100 rounded-xl">
                                         {filteredSubjects.map((sub) => {
                                             const isSelected = selectedSubjects.some(s => s.code === sub.code);
@@ -305,10 +393,8 @@
                                 {selectedSubjects.length > 0 && (
                                     <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
                                         <h2 className="text-sm font-bold uppercase tracking-wider unal-text flex items-center gap-2">
-                                            <i className="fa-solid fa-arrow-down-short-wide"></i> 3. Prioriza tus Materias (Orden 1 al {selectedSubjects.length})
+                                            <i className="fa-solid fa-arrow-down-short-wide"></i> 3. Ordena tu Prioridad (1 es tu máxima prioridad)
                                         </h2>
-                                        <p className="text-xs text-slate-500">Usa las flechas para subir tu materia de mayor prioridad al puesto #1.</p>
-
                                         <div className="space-y-2">
                                             {selectedSubjects.map((sub, idx) => (
                                                 <div key={sub.code} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs">
@@ -353,34 +439,83 @@
                         )
                     )}
 
-                    {/* VISTA ADMINISTRACIÓN (SOLO PARA TI Y EL COMITÉ) */}
-                    {view === 'admin' && (
+                    {/* VISTA ADMINISTRACIÓN (PROTEGIDA) */}
+                    {view === 'admin' && isAdminAuthenticated && (
                         <div className="space-y-6">
-                            <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-sm space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="font-bold text-lg text-emerald-400">Panel de Control & Analítica DIQA</h2>
-                                    <span className="text-xs bg-slate-800 text-slate-300 px-3 py-1 rounded-full font-mono">Modo Administrador</span>
+                            <div className="bg-slate-900 text-white p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div>
+                                    <h2 className="font-bold text-lg text-emerald-400">Consolidado de Analítica RII-IQ</h2>
+                                    <p className="text-xs text-slate-300">Respuestas reales recibidas: {responses.length} estudiantes</p>
                                 </div>
-                                <p className="text-xs text-slate-300">
-                                    Este panel es de acceso privado para la Representación Estudiantil y el Comité Asesor. Los estudiantes no lo ven al responder.
-                                </p>
+                                <button 
+                                    onClick={downloadCSV}
+                                    className="bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-emerald-500 transition-colors flex items-center gap-2">
+                                    <i className="fa-solid fa-file-excel"></i> Descargar Excel / CSV
+                                </button>
                             </div>
 
                             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200 space-y-4">
-                                <h3 className="font-bold text-sm text-slate-800">Demanda Proyectada por Materia (Vista Previa)</h3>
-                                <div className="space-y-3 text-xs">
-                                    {OFFICIAL_SUBJECTS.slice(0, 6).map((sub, i) => (
-                                        <div key={sub.code} className="space-y-1">
-                                            <div className="flex justify-between font-semibold">
-                                                <span>{sub.name} ({sub.code})</span>
-                                                <span className="unal-text font-bold">{75 - i * 8} solicitudes</span>
+                                <h3 className="font-bold text-sm text-slate-800">Registros Recibidos en Tiempo Real</h3>
+                                <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 text-xs">
+                                    {responses.length === 0 ? (
+                                        <p className="text-slate-400 text-center py-6">Aún no se registran intenciones de inscripción.</p>
+                                    ) : (
+                                        responses.map((r, idx) => (
+                                            <div key={idx} className="py-3 space-y-1">
+                                                <div className="flex justify-between font-bold text-slate-700">
+                                                    <span>{r.email} ({r.code})</span>
+                                                    <span className="text-[10px] font-normal text-slate-400">{r.timestamp}</span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-1">
+                                                    {r.subjects.map(s => (
+                                                        <span key={s.code} className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px]">
+                                                            #{s.priority} {s.name}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
-                                            <div className="w-full bg-slate-100 rounded-full h-2">
-                                                <div className="unal-green h-2 rounded-full" style={{ width: `${85 - i * 10}%` }}></div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                        ))
+                                    )}
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* MODAL DE CONTRASEÑA DE ADMINISTRADOR */}
+                    {showPinModal && (
+                        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+                            <div className="bg-white rounded-2xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+                                <div className="text-center space-y-1">
+                                    <div className="w-12 h-12 bg-slate-100 text-slate-800 rounded-full flex items-center justify-center mx-auto text-lg mb-2">
+                                        <i className="fa-solid fa-lock"></i>
+                                    </div>
+                                    <h3 className="font-bold text-slate-900">Acceso Restringido</h3>
+                                    <p className="text-xs text-slate-500">Ingresa la clave de representante / administración para acceder a las estadísticas.</p>
+                                </div>
+
+                                <form onSubmit={verifyPin} className="space-y-3">
+                                    <input 
+                                        type="password" 
+                                        placeholder="Ingresa el PIN de Administrador"
+                                        value={inputPin}
+                                        onChange={(e) => setInputPin(e.target.value)}
+                                        className="w-full px-3 py-2 text-center font-mono tracking-widest text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                                        autoFocus
+                                    />
+                                    <div className="flex gap-2">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setShowPinModal(false)}
+                                            className="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">
+                                            Cancelar
+                                        </button>
+                                        <button 
+                                            type="submit"
+                                            className="flex-1 unal-green text-white py-2 rounded-xl text-xs font-bold">
+                                            Ingresar
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     )}
